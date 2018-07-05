@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="Moonshard" version="0.0.1" xmlns="http://moonshard.team.org" xmlns:cdv="http://moonshard.team.org">
+<widget id="Moonshard.messenger" version="0.0.1" xmlns="http://moonshard.team.org" xmlns:cdv="http://moonshard.team.org">
     <name>MoonShard</name>
     <description>
         Centralized messenger with decentralized functionality.

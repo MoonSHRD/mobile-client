@@ -41,86 +41,21 @@ PeerId.createFromJSON(require('./peer-id-listener'), (err, idListener) => {
             throw err
         }
 
-        // nodeListener.on('peer:connect', (peerInfo) => {
-        //     console.log(peerInfo.id.toB58String())
-        // });
+        nodeListener.pubsub.subscribe('news', (msg) => {
+            console.log(msg.from, msg.data.toString());
+            try {
+                let data = JSON.parse(msg.data.toString());
+                //cordova.channel.post(data["type"], data["data"]);
+                console.log(data);
+            } catch (e) {
+                console.log(e);
+            }
+        }, () => {});
 
-        // nodeListener.handle('/chat/1.0.0', (protocol, conn) => {
-        //     pull(
-        //         p,
-        //         conn
-        //     );
-        //
-        //     pull(
-        //         conn,
-        //         pull.map((data) => {
-        //             let ddtt=data.toString('utf8');
-        //             try {
-        //                 let normal_data=JSON.parse(ddtt);
-        //                 console.log(normal_data);
-        //             } catch (e) {
-        //                 console.log(e);
-        //             }
-        //             //cordova.channel.post(normal_data["type"], normal_data["data"]);
-        //             return ddtt.replace('\n', '')
-        //             //return data.toString('utf8').replace('\n', '')
-        //         }),
-        //         pull.drain(console.log)
-        //     );
-        //
-        //
-        //     // process.stdin.setEncoding('utf8');
-        //     // process.openStdin().on('data', (chunk) => {
-        //     //     let data = chunk.toString();
-        //     //     // cordova.channel.post(msg_send_event, data);
-        //     //     p.push(data)
-        //     // })
-        // });
-
-        nodeListener.dialProtocol('/ip4/127.0.0.1/tcp/10333/ipfs/QmYcuVrDn76jLz62zAQDmfttX9oSFH1cGXSH9rdisbHoGP','/main-node/1.0.0', (err, conn) => {
+        nodeListener.dial('/ip4/127.0.0.1/tcp/10333/ipfs/QmYcuVrDn76jLz62zAQDmfttX9oSFH1cGXSH9rdisbHoGP', (err, conn) => {
             if (err) {
                 throw err
             }
-
-            console.log('nodeA dialed to main-node');
-
-            // cordova.channel.on(msg_send_event, (msg) => {
-            //     p.push(msg)
-            // });
-
-            // Write operation. Data sent as a buffer
-            // pull(
-            //     p,
-            //     conn
-            // );
-            // // Sink, data converted from buffer to utf8 string
-            // pull(
-            //     conn,
-            //     pull.map((data) => {
-            //         let ddtt=data.toString('utf8');
-            //         console.log("received peers list from Main Node: "+ddtt);
-            //         // console.log("received peers list from Main Node: "+ddtt);
-            //         try {
-            //             let normal_data=JSON.parse(ddtt);
-            //             //cordova.channel.post(normal_data["type"], normal_data["data"]);
-            //             console.log(normal_data);
-            //         } catch (e) {
-            //             console.log(e);
-            //         }
-            //         return ddtt;
-            //     }),
-            //     pull.drain(console.log)
-            // );
-
-            //pull(pull.values(['protocol (b)']));
-
-            process.stdin.setEncoding('utf8');
-            process.openStdin().on('data', (chunk) => {
-                let data = chunk.toString();
-                // cordova.channel.post(msg_send_event, data);
-                p.push(data)
-                //pull(pull.values(data), conn);
-            })
         });
 
 

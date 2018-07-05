@@ -115,7 +115,7 @@ PeerId.createFromJSON(require('./peer-id-listener'), (err, idListener) => {
             process.openStdin().on('data', (chunk) => {
                 let data = chunk.toString();
                 // cordova.channel.post(msg_send_event, data);
-                p.push(data)
+                p.push(data);
             })
         });
 

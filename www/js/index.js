@@ -110,10 +110,13 @@ function peersReceivedEvent(msg) {
     alert(msg);
     let container=$("peers_storager");
     container.empty();
-    container.append("<a data-type='peer_connect' data-id='"+item+"'>"+item+"</a>")
-    msg.forEach(function (item) {
-        container.append("<a data-type='peer_connect' data-id='"+item+"'>"+item+"</a>")
-    });
+    //container.append("<a data-type='peer_connect' data-id='"+item+"'>"+item+"</a>")
+    for (let v in msg) {
+        container.append("<a data-type='peer_connect' data-id='"+msg[v]+"'>"+msg[v]+"</a>")
+    }
+    // msg.forEach(function (i,item) {
+    //     container.append("<a data-type='peer_connect' data-id='"+item+"'>"+item+"</a>")
+    // });
 }
 
 

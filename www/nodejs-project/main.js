@@ -126,232 +126,24 @@ PeerId.createFromJSON(require(path_to_id), (err, idListener) => {
             );
         });
 
-        // nodeListener.handle('/main-node/1.0.0', (protocol, conn) => {
-        //     pull(
-        //         p,
-        //         conn
-        //     );
-        //
-        //     pull(
-        //         conn,
-        //         pull.map((data) => {
-        //             let ddtt=data.toString('utf8');
-        //             console.log("received message on main-node: "+ddtt);
-        //             cordova.channel.post(msg_send_event, ddtt);
-        //             return ddtt.replace('\n', '')
-        //         }),
-        //         pull.drain(console.log)
-        //     );
-        // });
+        nodeListener.pubsub.subscribe('news', (msg) => {
+            console.log(msg.from, msg.data.toString());
+            try {
+                let data = JSON.parse(msg.data.toString());
+                cordova.channel.post(data["type"], data["data"]);
+                console.log(data);
+            } catch (e) {
+                console.log(e);
+            }
+        }, () => {});
 
-        //console.log('Listener ready, listening on:');
-
-        // peerListener.multiaddrs.forEach((ma) => {
-        //     console.log(ma.toString() + '/ipfs/' + idListener.toB58String())
-        // });
-
-
-        nodeListener.dialProtocol('/ip4/'+mainNodeIp+'/tcp/10333/ipfs/'+mainNodeId, '/main-node/1.0.0', (err, conn) => {
+        nodeListener.dial('/ip4/'+mainNodeIp+'/tcp/10333/ipfs/'+mainNodeId, (err, conn) => {
             if (err) {
                 throw err
             }
-
-            console.log('nodeA dialed to main-node');
-
-            // cordova.channel.on(msg_send_event, (msg) => {
-            //     p.push(msg)
-            // });
-
-            // Write operation. Data sent as a buffer
-            pull(
-                p,
-                conn
-            );
-            // Sink, data converted from buffer to utf8 string
-            pull(
-                conn,
-                pull.map((data) => {
-                    console.log("received peers list from Main Node");
-                    let ddtt=data.toString('utf8');
-
-                    try {
-                        let normal_data=JSON.parse(ddtt);
-                        cordova.channel.post(normal_data["type"], JSON.stringify(normal_data["data"]));
-                        console.log("sent peers list to client side");
-                    } catch (e) {
-                        console.log(e);
-                    }
-                    return ddtt;
-                }),
-                pull.drain(console.log)
-            );
         });
 
         console.log('Listener ready, listening on:');
         cordova.channel.post(msg_send_event, "Listener ready");
     })
 });
-
-
-
-
-
-
-
-
-//main node dealer
-// async.parallel([
-//     (callback) => {
-//         PeerId.createFromJSON(require('./chat/peer-id-dialer'), (err, idDialer) => {
-//             if (err) {
-//                 throw err
-//             }
-//             callback(null, idDialer)
-//         })
-//     },
-//     (callback) => {
-//         PeerId.createFromJSON(require('./chat/peer-id-listener'), (err, idListener) => {
-//             if (err) {
-//                 throw err
-//             }
-//             callback(null, idListener)
-//         })
-//     }
-// ], (err, ids) => {
-//     if (err) throw err;
-//     const peerDialer = new PeerInfo(ids[0]);
-//     peerDialer.multiaddrs.add('/ip4/0.0.0.0/tcp/0');
-//     const nodeDialer = new Node({
-//         peerInfo: peerDialer
-//     });
-//
-//     const peerListener = new PeerInfo(ids[1]);
-//     idListener = ids[1];
-//     peerListener.multiaddrs.add('/ip4/192.168.1.12/tcp/10333');
-//     nodeDialer.start((err) => {
-//         if (err) {
-//             throw err
-//         }
-//
-//         nodeDialer.dialProtocol(peerListener, '/chat/1.0.0', (err, conn) => {
-//             if (err) {
-//                 throw err
-//             }
-//
-//             cordova.channel.on(msg_send_event, (msg) => {
-//                 p.push(msg)
-//             });
-//
-//             // Write operation. Data sent as a buffer
-//             pull(
-//                 p,
-//                 conn
-//             );
-//             // Sink, data converted from buffer to utf8 string
-//             pull(
-//                 conn,
-//                 pull.map((data) => {
-//                     let ddtt=data.toString('utf8');
-//                     try {
-//                         let normal_data=JSON.parse(ddtt);
-//                         cordova.channel.post(normal_data["type"], normal_data["data"]);
-//                     } catch (e) {
-//                         console.log(e)
-//                     }
-//                     return ddtt
-//                 }),
-//                 pull.drain(console.log)
-//             );
-//         })
-//     })
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function dial_peer(peer_id) {
-//
-// }
-//
-// //dialer
-// async.parallel([
-//     (callback) => {
-//         PeerId.createFromJSON(require('./chat/peer-id-dialer'), (err, idDialer) => {
-//             if (err) {
-//                 throw err
-//             }
-//             callback(null, idDialer)
-//         })
-//     },
-//     (callback) => {
-//         PeerId.createFromJSON(require('./chat/peer-id-listener'), (err, idListener) => {
-//             if (err) {
-//                 throw err
-//             }
-//             callback(null, idListener)
-//         })
-//     }
-// ], (err, ids) => {
-//     if (err) throw err;
-//     const peerDialer = new PeerInfo(ids[0]);
-//     peerDialer.multiaddrs.add('/ip4/0.0.0.0/tcp/0');
-//     const nodeDialer = new Node({
-//         peerInfo: peerDialer
-//     });
-//
-//     const peerListener = new PeerInfo(ids[1]);
-//     idListener = ids[1];
-//     peerListener.multiaddrs.add('/ip4/192.168.1.11/tcp/10333') //192.168.1.11
-//     //peerListener.multiaddrs.add('/ip4/127.0.0.1/tcp/10333'); //192.168.1.11
-//     nodeDialer.start((err) => {
-//         if (err) {
-//             throw err
-//         }
-//
-//         console.log('Dialer ready, listening on:');
-//
-//         peerListener.multiaddrs.forEach((ma) => {
-//             console.log(ma.toString() + '/ipfs/' + idListener.toB58String())
-//         });
-//
-//         nodeDialer.dialProtocol(peerListener, '/chat/1.0.0', (err, conn) => {
-//             if (err) {
-//                 throw err
-//             }
-//             console.log('nodeA dialed to nodeB on protocol: /chat/1.0.0');
-//             console.log('Type a message and see what happens');
-//
-//             cordova.channel.on(msg_send_event, (msg) => {
-//                 p.push(msg)
-//             });
-//
-//             // Write operation. Data sent as a buffer
-//             pull(
-//                 p,
-//                 conn
-//             );
-//             // Sink, data converted from buffer to utf8 string
-//             pull(
-//                 conn,
-//                 pull.map((data) => {
-//                     let ddtt=data.toString('utf8');
-//                     cordova.channel.post(msg_send_event, ddtt);
-//                     return ddtt.replace('\n', '')
-//                 }),
-//                 pull.drain(console.log)
-//             );
-//         })
-//     })
-// });
