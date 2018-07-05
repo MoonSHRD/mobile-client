@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="Moonshard" version="0.0.1" xmlns="http://moonshard.team.org" xmlns:cdv="http://moonshard.team.org">
+    <name>MoonShard</name>
+    <description>
+        Centralized messenger with decentralized functionality.
+    </description>
+    <author email="dev@moonshard.team.org" href="http://moonshard.team.org">
+        MoonShard Team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+    </platform>
+    <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
+    <plugin name="cordova-plugin-console" spec="^1.1.0" />
+    <plugin name="nodejs-mobile-cordova" spec="^0.1.5" />
+</widget>

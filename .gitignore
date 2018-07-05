@@ -1,0 +1,8 @@
+node_modules/
+.idea/
+www/nodejs-project/node_modules/
+hooks/
+platforms/
+plugins/
+res/
+comfig.xml
