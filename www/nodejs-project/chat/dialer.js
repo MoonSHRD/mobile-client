@@ -38,8 +38,8 @@ async.parallel([
     const peerListener = new PeerInfo(ids[1]);
     idListener = ids[1];
     // peerListener.multiaddrs.add('/ip4/127.0.0.1/tcp/10333'); //local
-    //peerListener.multiaddrs.add('/ip4/192.168.1.12/tcp/10333'); //me
-    peerListener.multiaddrs.add('/ip4/192.168.1.12/tcp/10333') //alex
+    peerListener.multiaddrs.add('/ip4/192.168.1.11/tcp/10333'); //me
+    //peerListener.multiaddrs.add('/ip4/192.168.1.12/tcp/10333') //alex
     nodeDialer.start((err) => {
         if (err) {
             throw err
@@ -51,8 +51,8 @@ async.parallel([
             console.log(ma.toString() + '/ipfs/' + idListener.toB58String())
         });
 
-        // nodeDialer.dialProtocol(peerListener, '/chat/1.0.0', (err, conn) => {
-        nodeDialer.dialProtocol('/ip4/127.0.0.1/tcp/10333/ipfs/QmYcuVrDn76jLz62zAQDmfttX9oSFH1cGXSH9rdisbHoGP', '/main-node/1.0.0', (err, conn) => {
+        nodeDialer.dialProtocol(peerListener, '/chat/1.0.0', (err, conn) => {
+        // nodeDialer.dialProtocol('/ip4/127.0.0.1/tcp/10333/ipfs/QmYcuVrDn76jLz62zAQDmfttX9oSFH1cGXSH9rdisbHoGP', '/main-node/1.0.0', (err, conn) => {
             if (err) {
                 throw err
             }

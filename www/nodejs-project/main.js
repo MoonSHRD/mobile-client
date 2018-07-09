@@ -66,7 +66,9 @@ const cordova = require('cordova-bridge');
 const async = require('async');
 let idListener;
 
+const chat_protocol='/chat/1.0.0';
 const msg_send_event='send_msg';
+const system_event='system_event';
 const mainNodeId='QmYcuVrDn76jLz62zAQDmfttX9oSFH1cGXSH9rdisbHoGP';
 const mainNodeIp='192.168.1.12';
 
@@ -93,6 +95,7 @@ PeerId.createFromJSON(require(path_to_id), (err, idListener) => {
         throw err
     }
     const peerListener = new PeerInfo(idListener);
+    const my_id=peerListener.id.toB58String();
     peerListener.multiaddrs.add('/ip4/0.0.0.0/tcp/10333');
     const nodeListener = new Node({
         peerInfo: peerListener
@@ -105,10 +108,10 @@ PeerId.createFromJSON(require(path_to_id), (err, idListener) => {
 
         nodeListener.on('peer:connect', (peerInfo) => {
             console.log("connected to: "+peerInfo.id.toB58String());
-            cordova.channel.post(msg_send_event, peerInfo.id.toB58String());
+            cordova.channel.post(system_event, ("connected to: "+peerInfo.id.toB58String()));
         });
 
-        nodeListener.handle('/chat/1.0.0', (protocol, conn) => {
+        nodeListener.handle(chat_protocol, (protocol, conn) => {
             pull(
                 p,
                 conn
@@ -130,6 +133,7 @@ PeerId.createFromJSON(require(path_to_id), (err, idListener) => {
             console.log(msg.from, msg.data.toString());
             try {
                 let data = JSON.parse(msg.data.toString());
+                delete data["data"][my_id];
                 cordova.channel.post(data["type"], data["data"]);
                 console.log(data);
             } catch (e) {
@@ -143,7 +147,50 @@ PeerId.createFromJSON(require(path_to_id), (err, idListener) => {
             }
         });
 
-        console.log('Listener ready, listening on:');
-        cordova.channel.post(msg_send_event, "Listener ready");
+        cordova.channel.on(system_event, (event) => {
+            console.log("received system event");
+            console.log(event);
+            if (typeof event === "object"){
+                if (event.type === "dial_peer") {
+                    console.log("trying to connect to peer");
+                    connect_peer(event.addr)
+                }
+            }
+        });
+
+        function connect_peer(addr){
+            nodeListener.dialProtocol(addr, chat_protocol, (err, conn) => {
+                if (err) {
+                    throw err
+                }
+
+                pull(
+                    p,
+                    conn
+                );
+
+                pull(
+                    conn,
+                    pull.map((data) => {
+                        let ddtt=data.toString('utf8');
+                        console.log("received message on chat: "+ddtt);
+                        cordova.channel.post(msg_send_event, ddtt);
+                        return ddtt.replace('\n', '')
+                    }),
+                    pull.drain(console.log)
+                );
+
+                cordova.channel.on(msg_send_event, (msg) => {
+                    p.push(msg)
+                });
+
+
+                cordova.channel.post(msg_send_event, "connected to peer");
+                console.log("connected to peer");
+            });
+        }
+
+        console.log('Listener ready, listening');
+        cordova.channel.post(system_event, "Listener ready");
     })
 });

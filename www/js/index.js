@@ -30,6 +30,7 @@ app.initialize();
 
 let msg_send_event='send_msg';
 let peers_received_event='connected_peers_list';
+let system_event='system_event';
 
 // In this example the channel listener handles only two types of messages:
 // - the 'Reply' object type that is defined in the www/nodejs-project/main.js
@@ -84,6 +85,7 @@ function startNodeProject() {
   nodejs.channel.on('started', startedEventistener);
   nodejs.channel.on(msg_send_event, msgSendEvent);
   nodejs.channel.on(peers_received_event, peersReceivedEvent);
+  nodejs.channel.on(system_event, receivedSystemEvent);
 
   // As an alternative to 'nodejs.channel.setListener', the 'nodejs.channel.on'
   // method can be used:
@@ -96,35 +98,64 @@ function startNodeProject() {
   // nodejs.start('main.js', startupCallback, { redirectOutputToLogcat: false });
 }
 
+let peers = $("#available_peers");
+let msg_box = $("#msg_box");
+let chat = $("#chat_box");
+let loading = $("#loading");
+let loading_text = $("#loading_text");
+let app_part = $("#main_app_part");
+
+
+function receivedSystemEvent(event){
+    console.log(event);
+    if (event==="Listener ready") {
+        loading.fadeOut();
+        app_part.fadeIn();
+    }
+}
+
 
 $('#msg_send').click(function(e){
     e.preventDefault();
     let text=$('#msg_text'),
         msg=text.val();
     text.val('');
-    //nodejs.channel.send(text);
+    add_message(msg);
     nodejs.channel.post(msg_send_event, msg);
 });
 
 function peersReceivedEvent(msg) {
-    alert(msg);
-    let container=$("peers_storager");
-    container.empty();
-    //container.append("<a data-type='peer_connect' data-id='"+item+"'>"+item+"</a>")
-    for (let v in msg) {
-        container.append("<a data-type='peer_connect' data-id='"+msg[v]+"'>"+msg[v]+"</a>")
+    if (msg) {
+        if (typeof msg === 'string') {
+            //
+        } else if (typeof msg === 'object') {
+            let container=$("#peers_storager");
+            container.empty();
+            for (let id in msg) {
+                container.append("<a data-type='peer_connect' data-id='"+id+"' data-addr='"+msg[id]+"'>"+id+"</a></br>")
+            }
+        } else {
+            //
+        }
+    } else {
+        console.log('empty msg instead of peers');
     }
-    // msg.forEach(function (i,item) {
-    //     container.append("<a data-type='peer_connect' data-id='"+item+"'>"+item+"</a>")
-    // });
 }
+
+$(document).on('click','[data-type=peer_connect]',function (e) {
+    e.preventDefault();
+
+    let id=$(this).attr('data-type');
+    let addr=$(this).attr('data-addr');
+    nodejs.channel.post(system_event, {"type":"dial_peer","id":id,"addr":addr});
+});
 
 
 function msgSendEvent(msg) {
     if (msg) {
 
         if (typeof msg === 'string') {
-            $('#msg_storager').append("<p>"+msg+"</p>")
+            add_message(msg);
         } else if (typeof msg === 'object') {
             // Add your own logic there
         } else {
@@ -132,5 +163,15 @@ function msgSendEvent(msg) {
         }
     } else {
         console.log('[cordova] "STARTED" event received from Node');
+    }
+}
+
+function add_message(msg) {
+    if (typeof msg === 'string') {
+        $('#msg_storager').append("<p>"+msg+"</p>");
+    } else if (typeof msg === 'object') {
+        // Add your own logic there
+    } else {
+        console.log('unexpected object type: ' + typeof msg);
     }
 }

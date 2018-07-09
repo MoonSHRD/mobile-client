@@ -26,7 +26,9 @@ const fs = require("fs");
 //     });
 // }
 
-PeerId.createFromJSON(require('./peer-id-listener'), (err, idListener) => {
+const chat_protocol='/chat/1.0.0';
+
+PeerId.createFromJSON(require('./peer-id-dialer'), (err, idListener) => {
     if (err) {
         throw err
     }
@@ -38,8 +40,54 @@ PeerId.createFromJSON(require('./peer-id-listener'), (err, idListener) => {
 
     nodeListener.start((err) => {
         if (err) {
-            throw err
+            //throw err
+            console.log(err);
         }
+
+        nodeListener.on('peer:disconnect', (peerInfo) => {
+            console.log("disconnect: "+peerInfo.id.toB58String());
+        });
+
+        nodeListener.handle(chat_protocol, (protocol, conn) => {
+            pull(
+                p,
+                conn
+            );
+
+            // catchError(pull(
+            //     conn,
+            //     pull.map((data) => {
+            //         let ddtt=data.toString('utf8');
+            //         console.log("received message on chat: "+ddtt);
+            //         //cordova.channel.post(msg_send_event, ddtt);
+            //         return ddtt.replace('\n', '')
+            //     }),
+            //     pull.drain(console.log)
+            // ));
+
+            pull(
+                //conn,
+                pull.map((v) => v.toString()),
+                // pull.log()
+            )
+
+            // pull(
+            //     conn,
+            //     pull.map((data) => {
+            //         let ddtt=data.toString('utf8');
+            //         console.log("received message on chat: "+ddtt);
+            //         //cordova.channel.post(msg_send_event, ddtt);
+            //         return ddtt.replace('\n', '')
+            //     }),
+            //     pull.drain(console.log)
+            // );
+
+            process.stdin.setEncoding('utf8');
+            process.openStdin().on('data', (chunk) => {
+                let data = chunk.toString();
+                p.push(data)
+            })
+        });
 
         nodeListener.pubsub.subscribe('news', (msg) => {
             console.log(msg.from, msg.data.toString());

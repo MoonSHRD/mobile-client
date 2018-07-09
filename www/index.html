@@ -28,10 +28,12 @@
         * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
             * Enable inline JS: add 'unsafe-inline' to default-src
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <meta name="viewport"
+          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <title>Hello World</title>
@@ -39,36 +41,55 @@
 <body>
 <div class="app">
     <!--<h1>Apache Cordova</h1>-->
-    <div id="deviceready" class="blink" style="display: none">
-        <p class="event listening">Connecting to Device</p>
-        <p class="event received">Device is Ready</p>
-        <a href="dialer.html">dialer</a>
-    </div>
-
-    <div class="panel-group">
-        <div class="panel panel-default">
-            <div class="panel-heading">Available peers</div>
-            <div class="panel-body" id="peers_storager">
-
-            </div>
+    <div id="loading">
+        <div class="container">
+            <div class="back side"></div>
+            <div class="left side"></div>
+            <div class="right side"></div>
+            <div class="top side"></div>
+            <div class="bottom side"></div>
+            <div class="front side"></div>
+        </div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <div id="loading_text">
+            <h3>Loading...</h3>
         </div>
     </div>
-    <div class="panel-group">
-        <div class="panel panel-default">
-            <div class="panel-heading">Chat</div>
-            <div class="panel-body" id="msg_storager">
 
+    <div id="main_app_part" style="display: none">
+        <div id="deviceready" class="blink" style="display: none">
+            <p class="event listening">Connecting to Device</p>
+            <p class="event received">Device is Ready</p>
+            <a href="dialer.html">dialer</a>
+        </div>
+
+        <div class="panel-group" id="available_peers">
+            <div class="panel panel-default">
+                <div class="panel-heading">Available peers</div>
+                <div class="panel-body wrap" id="peers_storager">
+
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label for="msg_text">Enter your message:</label>
-        <input type="text" class="form-control" id="msg_text">
-    </div>
-    <button id="msg_send" type="button" class="btn btn-success">Success</button>
+        <div class="panel-group" style="display: none" id="chat_box">
+            <div class="panel panel-default">
+                <div class="panel-heading">Chat</div>
+                <div class="panel-body wrap" id="msg_storager">
 
+                </div>
+            </div>
+        </div>
+        <div class="form-group" style="display: none" id="msg_box">
+            <label for="msg_text">Enter your message:</label>
+            <input type="text" class="form-control" id="msg_text">
+        </div>
+        <button id="msg_send" type="button" class="btn btn-success">Success</button>
+    </div>
 </div>
-
 </body>
 <script type="text/javascript" src="cordova.js"></script>
 <script src="js/jquery/jquery-1.11.1.min.js"></script>
