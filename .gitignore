@@ -1,6 +1,6 @@
 node_modules/
 .idea/
-www/nodejs-project/node_modules/
+www/nodejs-project/libs/
 hooks/
 platforms/
 plugins/
